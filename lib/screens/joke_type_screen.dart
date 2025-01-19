@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/api_services.dart';
 import '../screens/jokes_by_type_screen.dart';
+import '../screens/favorite_jokes_screen.dart';
+import '../models/joke.dart';
 import '../widgets/loading_indicator.dart';
 
 class JokeTypesScreen extends StatefulWidget {
@@ -10,6 +12,7 @@ class JokeTypesScreen extends StatefulWidget {
 
 class _JokeTypesScreenState extends State<JokeTypesScreen> {
   List<String> jokeTypes = [];
+  List<Joke> favoriteJokes = [];
   bool isLoading = true;
 
   @override
@@ -37,9 +40,15 @@ class _JokeTypesScreenState extends State<JokeTypesScreen> {
         title: Text('Joke Types'),
         actions: [
           IconButton(
-            icon: Icon(Icons.shuffle),
+            icon: Icon(Icons.favorite),
             onPressed: () {
-              Navigator.pushNamed(context, '/random');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      FavoriteJokesScreen(favoriteJokes: favoriteJokes),
+                ),
+              );
             },
           ),
         ],
@@ -55,8 +64,14 @@ class _JokeTypesScreenState extends State<JokeTypesScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      JokesByTypeScreen(type: jokeTypes[index]),
+                  builder: (context) => JokesByTypeScreen(
+                    type: jokeTypes[index],
+                    onFavorite: (joke) {
+                      setState(() {
+                        favoriteJokes.add(joke);
+                      });
+                    },
+                  ),
                 ),
               );
             },

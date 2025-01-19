@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import '../models/joke.dart';
 import '../services/api_services.dart';
 import '../widgets/loading_indicator.dart';
-import '../widgets/joke_card.dart';
 
 class JokesByTypeScreen extends StatefulWidget {
   final String type;
+  final Function(Joke) onFavorite;
 
-  JokesByTypeScreen({required this.type});
+  JokesByTypeScreen({required this.type, required this.onFavorite});
 
   @override
   _JokesByTypeScreenState createState() => _JokesByTypeScreenState();
@@ -46,7 +46,27 @@ class _JokesByTypeScreenState extends State<JokesByTypeScreen> {
           : ListView.builder(
         itemCount: jokes.length,
         itemBuilder: (context, index) {
-          return JokeCard(joke: jokes[index]);
+          final joke = jokes[index];
+          return Card(
+            child: ListTile(
+              title: Text(joke.setup),
+              subtitle: Text(joke.punchline),
+              trailing: IconButton(
+                icon: Icon(
+                  joke.isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: joke.isFavorite ? Colors.red : null,
+                ),
+                onPressed: () {
+                  setState(() {
+                    joke.isFavorite = !joke.isFavorite;
+                  });
+                  if (joke.isFavorite) {
+                    widget.onFavorite(joke);
+                  }
+                },
+              ),
+            ),
+          );
         },
       ),
     );
